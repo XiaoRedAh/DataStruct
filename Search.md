@@ -1,7 +1,11 @@
 # 搜索
+
 ## 前置
+
 ## 顺序搜索小优化——设置监视哨
+
 *将要搜索的值赋值给数组最后一个元素的下一个位置，这样就不用每次比较都判断是否越界*
+
 ```c++
 int SeqSearchWatch(T x) {
 	int i = 0;
@@ -12,8 +16,11 @@ int SeqSearchWatch(T x) {
 	else return i + 1;
 }
 ```
+
 ## 基于有序数据的二分查找
+
 结点结构体定义：data+key，按key查找
+
 ```c++
 template <class T,class E>
 struct DataNode {
@@ -21,9 +28,13 @@ struct DataNode {
 	E data;
 }; 
 ```
+
 *写代码时注意low，high，mid的边界情况和查找结束/失败时的情况就行*  
+
 *下面的代码返回的是物理位置：数组下标+1*  
+
 迭代实现
+
 ```c++
 template <class T>
 int BinarySearch(T x，DataNoed<T,E>* element,int size) {
@@ -39,7 +50,9 @@ int BinarySearch(T x，DataNoed<T,E>* element,int size) {
 	return -1;
 }
 ```
+
 递归实现
+
 ```c++
 template <class T,class E>
 int BinarySearchR(T x,DataNode<T,E> *element,int low,int high) {
@@ -50,7 +63,9 @@ int BinarySearchR(T x,DataNode<T,E> *element,int low,int high) {
 	else return mid;//实际位置=mid+1
 }
 ```
+
 ## BST二叉搜索树
+
 * 思想：用动态搜索结构实现二分查找
 * 左子树的值>根节点值>右子树的值
 * 中序遍历下输出递增序列
@@ -69,6 +84,7 @@ int BinarySearchR(T x,DataNode<T,E> *element,int low,int high) {
     2. 用后继接替：`Remove(temp->data,root->right)`  
 
 **代码实现**
+
 ```c++
 #include<iostream>
 using namespace std;
@@ -147,15 +163,20 @@ private:
 	}
 };
 ```
+
 ## AVL平衡树（优化BST）
+
 * 提出：有时构建出的BST极度不平衡，甚至退化为线性结构，搜索效率降低
 * 前置规定：
   * 平衡因子bf=右子树高度-左子树高度
   * 什么时候平衡：$\vert bf\vert$<=1
   * 最小失衡子树：从新插入的结点开始向上查找，以第一个bf失衡的结点为根的子树
 * 四种失衡类型及对应旋转方法（设最小失衡子树根节点root）  
+
 [详细图解点这里](https://www.cnblogs.com/suimeng/p/4560056.html)  
-**思路：判断类型后先明确旋转完后以谁为新的根节点。右子树高，则向左旋转，左子树高，则向右旋转，旋转完还要更新bf值**   
+
+**思路：判断类型后先明确旋转完后以谁为新的根节点。右子树高，则向左旋转，左子树高，则向右旋转，旋转完还要更新bf值**  
+
 >*书面描述旋转（结合上面的图解）*  
 左旋转：root的右孩子变成其右孩子的左孩子，然后root变成其右孩子的左孩子  
 右旋转：root的左孩子变成其左孩子的右孩子，然后root变成其左孩子的右孩子
@@ -169,6 +190,7 @@ private:
       * LR型（先左后右旋）：root的左子树高，root的左孩子是右边高
       * RL型（先右后左选）：root的右子树高，root的右孩子是左边高
 * 插入  
+
 找到插入位置并插入$\Longrightarrow$回溯更新沿途节点bf，找最小失衡子树 $\Longrightarrow$ 找到后判断失衡类型并旋转(只需调整一次，不用再回溯了)$\Longrightarrow$将调整的那部分接回AVL树  
   * 实现细节  
 **1. 沿途结点用栈维护；找插入位置，更新父节点bf，判断失衡类型都要用到双指针**  
@@ -178,6 +200,7 @@ private:
     3.  $\vert bf\vert$>1，父节点失衡，判断失衡类型并旋转  
 
 **代码实现**
+
 ```c++
 #include<iostream>
 #include<vector>
@@ -317,21 +340,28 @@ private:
 	}
 };
 ```
+
 ## 红黑树
+
 ## DisJoint Set(union-find set并查集)
+
 ### 前置
+
 **干啥用的**
+
 （动态）等价问题；解决一些图论问题（[例子：kruskal算法](Graph.md#kruskal算法）
 主要就是两个操作：`Find`和`Union`
 >An efficient data structure to solve the equivalence problem.These operations（Find/Union） are important in many graph theory problems and also in compilers which process equivalence (or type) declarations. 
 
 **啥是不相交集合（Disjoint Set）**
+
 >Each set has a different
 element, so that Si ∩ Sj = ∅; this makes the sets disjoint.
 
 **等价关系和等价类**：离散数学的知识
 
 **存储结构**
+
 同一个等价类放在一个树里（不是二叉树），这样的话，树根就可以代表这一个等价类（或者说set）。这么多树的集合就构成了一个森林
 >One idea might be to use a tree to represent each set, since each element in a tree has the same root. Thus, the root can be used to name the set. We will represent each set by a tree. (Recall that a collection of trees is known as a forest.) Initially, each set contains one element.
 
@@ -342,28 +372,39 @@ $s[i]=\begin{cases}
 \end{cases}$
 >The name of a set is given by the node at the root. Since only the name of the parent is required, we can assume that this tree is stored implicitly in an array: Each entry s[i] in the array represents the parent
 of element i. If i is a root, t
+
 ### 两个基本操作：Find和Union
+
 **不需要比较**
+
 >We do not perform any operations comparing the relative values of elements
 but merely require knowledge of their location. 
 
 **Find**
+
 理论
+
 find返回的是元素所在集合（等价类）的名字
+
 >A find(x) on element x is performed by returning the root of the tree containing x.finds on two elements return the same answer if and only if they are in the same set. 
 
 **Union**
+
 理论
+
 >If we want to add the relation a ∼ b, then we first see if a and b are already related. This is done by performing finds on both a and b and checking whether they are in the same equivalence class. If they are not, then we apply union.This operation merges the two equivalence classes containing a and b into a new equivalence class.
 
 一个不太好的Union方法：容易搞出退化的树
 将一个树的root直接置为另一个树的子女
+
 >Making the second tree a subtree of the first
 
 ### 优化并查集性能
+
 并查集主要的操作就是`find`和`union`，从上述讨论中发现，简单的`find`和`union`性能并不理想，需要去优化
 
 **优化Union：为了避免产生退化的树**
+
 * **union-by-size**
   $s[i]=\begin{cases}
 	元素i的parent & i不是root\\
@@ -403,6 +444,7 @@ find返回的是元素所在集合（等价类）的名字
 >Suppose the operation is find(x). Then the effect of path compression is that every node on the path from x to the root has its parent changed to the root.
 
 ### 代码示例
+
 这里优化`union`采用union-by-size的方法，因此数组s[i]的含义为：
 $s[i]=\begin{cases}
 元素i的parent & i不是root\\
@@ -473,24 +515,32 @@ private:
 ```
 
 ## 散列表
+
 ### 哈希函数
+
 * 要求
 	1. 函数定义域包含所有的key
 	2. 设哈希表有m个位置，则函数值域为0~m-1
 	3. 计算出来的地址均匀分布在地址空间 
+
 ### 处理冲突
+
 * Collision
 >Two keys may hash to the same slot. We call this situation a collision.
 * Load factor
 >Given a hash table T with m slots that stores n elements, we define the load factor $\alpha$ for T as n=m
+
 #### Chaining
 >In chaining, we place all the elements that hash to the same slot into the same linked list
 
 **注：当链表很长时，搜索效率降低，可以设计算法，当长度到一定值时，将链表转变成AVL或红黑树**
+
 **代码**
+
 * 哈希函数：除留余数法
 * 结点以键值对的形式
 * 注意二级指针的用法
+
 ```c++
 #include<iostream>
 using namespace std;
@@ -590,8 +640,11 @@ private:
 	}
 };
 ```
+
 #### Open Addressing
+
 >In open addressing, all elements occupy the hash table itself. That is, each table entry contains either an element of the dynamic set or NIL. When searching for an element, we systematically examine table slots until either we find the desired element or we have ascertained that the element is not in the table. No lists and no elements are stored outside the table, unlike in chaining. Thus, in open addressing, the hash table can “fill up” so that no further insertions can be made; one consequence is that the load factor $\alpha$ can never exceed 1.
+
 * **Linear probing**
   * 做法
 	位置冲突，则向后逐个找直到有空位置，将元素放入空位置
@@ -618,6 +671,7 @@ private:
 **Open Adressing的删除操作比较特殊**
 
 **代码（以Linear probing为例）**
+
 ```c++
 #include<iostream>
 using namespace std;
@@ -697,6 +751,9 @@ private:
 	}
 };
 ```
+
 ### 性能分析
+
 ### 完美哈希
+
 ## B树B+树
