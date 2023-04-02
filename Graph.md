@@ -1,6 +1,7 @@
 # 图
-## 还没想好写什么
+
 ## 图的存储结构
+
 操作一个图的基本函数
 `getValue(int pos)`:获得指定顶点的值
 `getWeight(int v1, int v2)`:获得(v1,v2)的权值
@@ -9,7 +10,9 @@
 `addEdge(int v1, int v2, double w)`:添加边(v1,v2),权值为w
 `removeVertice(int vPos)`:删除指定顶点v
 `removeEdge(int v1, int v2)`:删除边(v1,v2)
+
 ### 邻接矩阵
+
 需要用邻接矩阵adjMatrix[i][j]存储v[i]和v[j]间的权值，用verticeList数组存储顶点值
 
 带权值的图邻接矩阵定义如下
@@ -20,8 +23,10 @@ INF & 两顶点间没边\\
 \end{cases}$$
 
 代码
+
 实现的是带权图，构造时可选有向图或无向图
 类模板用的是两个参数，但似乎权值给定`double`类型就行了，反正在写的时候都是默认`double`，两个类模板似乎多余了
+
 ```c++
 #include<iostream>
 #include"Queue.h"
@@ -228,7 +233,9 @@ private:
 	}
 };
 ```
+
 ### 邻接表
+
 ![](pic/邻接表图示.png)
 该存储结构有两个表，一个是存放顶点的顶点表（数组），一个是存放边结点的边表（单链表）。
 
@@ -236,10 +243,15 @@ private:
 边结点结构体属性包括：边的另一个顶点的位置，边的权值，和一个next指针
 
 代码
+
 实现的是带权图，构造时可选择有向图或无向图
+
 这里权值我直接默认是`double`类型，所以类模板就一个参数了
+
 邻接表在删边，删结点的时候比较繁琐
+
 **删边，删结点在有向图时有bug，有时间再来改**
+
 ```c++
 #include<iostream>
 #include"Queue.h"
@@ -503,21 +515,29 @@ private:
 		}
 	}
 };
-
 ```
+
 ### 十字链表
+
 ### 邻接多重表
+
 ### 性能比较
+
 ## 图的遍历
+
 **网上大多数代码都默认图是连通的，也就是从任意顶点开始都能遍历完图中所有顶点。但以下我写的代码，图可能是不连通的，因此在算法最后会检查是否有没遍历到的顶点，如果有，就已没遍历的顶点为起点继续遍历**
+
 ### DFS
+
 深度优先搜索：一条路走到黑，没路了再返回，返回后每个回溯点都看看有没有其他还没走的路，如果有，重复上述操作
 
 关键在回溯$\Rightarrow$递归好写
 
 代码
 承接上面存储结构的代码
+
 * DFS邻接矩阵
+
 ```c++
 public:
 void DFS(V ver) {//从给定的顶点ver开始搜索
@@ -546,7 +566,9 @@ void DFS(int pos,int*flag) {
 		}
 	}
 ```
+
 * DFS邻接表
+
 ```c++
 public:
 void DFS(V ver) {
@@ -572,14 +594,19 @@ void DFS(int vPos, int* flag) {
 		}
 	}
 ```
+
 ### BFS
+
 广度优先搜索：每次，每个顶点都只向外扩散一层
 
 关键在队列实现
 
 代码
+
 承接上面存储结构的代码
+
 * BFS邻接矩阵
+
 ```c++
 public:
 void BFS(V ver) {
@@ -611,7 +638,9 @@ void BFS(V ver) {
 		}
 	}
 ```
+
 * BFS邻接表
+
 ```c++
 public:
 	void BFS(V ver) {
@@ -642,23 +671,33 @@ public:
 		}
 	}
 ```
+
 ### 连通分量
+
 ## 最小生成树
+
 ### 前置
+
 **生成树**
+
 如果**连通图**的一个子图是一棵包含所有顶点的树，则该子图称为G的生成树(SpanningTree)。换句话说，生成树是由图中所有顶点构成的极小连通子图。
 > Informally, a minimum spanning tree of an undirected graph G is a tree formed from graph edges that connects all the vertices of G at lowest total cost. A minimum spanning tree exists if and only if G is connected. 
 
 满足性质：边数=顶点数-1
 
 生成树并不唯一，只要能连通所有顶点而又不产生回路的任何子图都是G的生成树（DFS生成树，BFS生成树，Kruskal最小生成树树，Prim最小生成树...）
+
 **最小生成树**
+
 对于无向连通图来说，权值最小的生成树被成为最小生成树。
+
 **不同算法的作用对象**
+
 Kruskal和Prim算法适用求*无向连通图*的最小生成树
 Chu-Liu/Edmonds算法适用于求*有向连通图*的最小生成树
 
 **先将最小生成树的边界点定义出来**
+
 ```c++
 struct MSTEdgeNode {
 	int v1;
@@ -682,17 +721,23 @@ struct MSTEdgeNode {
 	}
 };
 ```
+
 为了方便，默认传进来的图都是连通图
+
 ### Kruskal算法（避圈法）
+
 **贪心策略**
+
 考察每一条边，每次拿出权值最小的边，若两端点在同一连通分量（加上这个边，就会构成一个回路），则舍弃；不在同一连通分量，则加入生成树
 
 **分析用什么结构**
+
 显然，用一个最小堆可以解决每次都拿权值最小边的问题
 考察两端点是否在同一连通分量里，实际上就是一个等价类问题，可以用到并查集
 >Formally, Kruskal’s algorithm maintains a forest—a collection of trees. Initially, there are |V| single-node trees. Adding an edge merges two trees into one. When the algorithm terminates, there is only one tree, and this is the minimum spanning tree. 
 
 **代码实现**
+
 最小堆，并查集的代码都是用我以前自己实现的代码
 *注意：我的`GraphAM`没有重写拷贝构造函数，如果只是传参类对象，副本的指针变量是直接赋值，函数退出后指针会被delete一次，main函数结束后原本的对象也要析构，那指针就会被delete两次，触发断点。所以这里为了简单（懒得重写复制构造函数），直接传引用*
 
@@ -733,10 +778,13 @@ vector<MSTEdgeNode> Kruskal(GraphAM<V, E> &graph) {
 ```
 
 ### Prim算法
+
 **贪心策略**
+
 每次选出一个端点在生成树中，另一个端点不在生成树中的权值最小的边加入生成树
 
 **代码实现**
+
 呃呃网上的代码看得有点晕，我这个好像写的和那些代码长得不太一样（但我觉得思路是一样的），但结果是对的
 
 邻接矩阵和邻接表的代码一模一样（这两个结构一样功能的函数，名字我都起的一样），只是在它们各自结构里相同功能的函数的实现不一样而已
@@ -772,30 +820,42 @@ vector<MSTEdgeNode> Prim(GraphAM<V, E>& graph,V ver) {
 	return mst;//返回构建好的最小生成树
 }
 ```
+
 ### Kruskal和Prim算法对比分析
+
 **直观上的感觉**
+
 Kruskal每次都选一个不构成回路的最小边出来，因此这些边是零散分布的，在最终形成一个最小生成树之前，是一个个最小生成树森林
 
 Prim每次都是选出和生成树相连的边里最小的那个，因此自始至终都是连通的
 
 **性能分析（性能推导看书）**
+
 一般情况下Kruskal算法更快，Prim算法适合稠密矩阵（边数远大于顶点数）
+
 >Use Prim's algorithm when you have a graph with lots of edges.For a graph with V vertices E edges, Kruskal's algorithm runs in O(E log V) time and Prim's algorithm can run in O(E + V log V) amortized time, if you use a Fibonacci Heap.
 Prim's algorithm is significantly faster in the limit when you've got a really dense graph with many more edges than vertices. Kruskal performs better in typical situations (sparse graphs) because it uses simpler data structures.
+
 ### Chu-Liu/Edmonds算法
+
 ## 最短路径
+
 ### 最短路径问题的共性思路
+
 **带权有向图和带权无向图都适用，有向图的实际应用意义更大**
 
 **最短路径的子路径也是最短路径**
+
 规定p=<v~0~,v~1~,...v~k~>是v~0~到v~k~的最短路径，对于任意0<=i<=j<=k,s=<v~i~,v~i+1~,...v~j~>是p的一条子路径，则s是v~i~到v~j~的最短路径
 这说明最短路径问题有*最优子结构*
 >Recall that optimal substructure is one of the key indicators that dynamic programming and the greedy method might apply. Dijkstra’s algorithm is a greedy algorithm, and the FloydWarshall algorithm, which finds shortest paths between all pairs of vertices is a dynamic-programming algorithm.
 
 **如果图有负权值圈，最短路径无解**
+
 当一个图含负权值边时，就可能出现负权值圈，这个时候最短路径就很难去定义（一直绕着那个负全圈走，路径长度到最后就变成了负无穷），最短路径问题无解
 
 **最短路径必然不含圈**
+
 图的任意一条最短路径既不能包含负权回路，也不会包含正权回路，因此它**最多包含|v|-1条边**（这在Bellman-Ford算法里十分关键）
 不含负值圈，正值圈解释
 >Can a shortest path contain a cycle? As we have just seen, it cannot contain a negative-weight cycle. Nor can it contain a positive-weight cycle, since removing the cycle from the path produces a path with the same source and destination vertices and a lower path weight.
@@ -804,9 +864,11 @@ Prim's algorithm is significantly faster in the limit when you've got a really d
 >We can remove a 0-weight cycle from any path to produce another path whose weight is the same. Thus, if there is a shortest path from a source vertex s to a destination vertex that contains a 0-weight cycle, then there is another shortest path from s to without this cycle.
 
 **保存路径**
+
 对于每个顶点，都只需记录最短路径中本顶点的前驱顶点
 
 **松弛技术Relaxation**
+
 松弛边(u,v)的过程:源点s到v的距离如果能在经过u的情况下缩短，则更新路径长度和路径前驱
 换句话说。就是用现在的最短路径更新其他的路径
 >Relaxation is the only means by which shortestpath estimates and predecessors change. 
@@ -815,9 +877,13 @@ Prim's algorithm is significantly faster in the limit when you've got a really d
 >The algorithms in this chapter differ in how many times they relax each edge and the order in which they relax edges Dijkstra’s algorithm and the shortest-paths algorithm for directed acyclic graphs relax each edge exactly once. The Bellman-Ford algorithm relaxes each edge |V|-1 times.
 
 ### 单源最短路径
-**不带权值的单源最短路径**
 
-**任意权值的单源最短路径——Bellman-Ford算法**
+#### 不带权值
+
+#### 任意权值
+
+**Bellman-Ford算法**
+
 * 运用最短路必然无环的性质
 假设有n个顶点，那么最短路的边最多n-1条，此时如果再加一条边，松弛操作仍成立，就说明有负权值圈，最短路问题无解。
 * 动态规划
@@ -828,8 +894,9 @@ $$path(k,i)=\begin{cases}
 	path(k-1,i) & dist[i]<dist[j]+weight(j,i)\\
 	path(k-1,j) & dist[i]>dist[j]+weight(j,i)\\
 \end{cases}$$
-* 代码
-k对应动态规划的阶段，因此在最外层循环
+
+**代码**
+
 ```c++
 bool BellmanFord(GraphAM<V, E>& graph, V ver, double dist[], int path[]) {
 	int vPos = graph.getVerPos(ver);//获得源点位置
@@ -865,13 +932,22 @@ bool BellmanFord(GraphAM<V, E>& graph, V ver, double dist[], int path[]) {
 	return true;
 }
 ```
-* 对判断是否有负权值圈进行优化
+
+**对判断是否有负权值圈进行优化**
+
 ```c++
 
 ```
 **优先级队列优化Bellman-Ford算法——SPFA算法**
 
-**非负权值的单源最短路径——Dijkstra算法**
+```c++
+
+```
+
+#### 非负权值
+
+**Dijkstra算法**
+
 * 辅助数组的含义
 dist[i]：源点s到顶点i的最短距离
 path[i]：源点s到顶点i的最短路径中，i的前驱顶点
@@ -887,7 +963,8 @@ book[i]：标记顶点i的最短路径是否已经确定（true，顶点在集�
 Dijkstra’s algorithm is like Prim’s algorithm in that both algorithms use a min-priority queue to find the “lightest” vertex outside a given set (the set S in Dijkstra’s
 algorithm and the tree being grown in Prim’s algorithm), add this vertex into the set, and adjust the weights of the remaining vertices outside the set accordingly.
 
-* 代码
+**代码**
+
 ```c++
 template<class V, class E>
 void Disjkstra(GraphAM<V, E>& graph, V ver, double dist[], int path[]) {
@@ -927,7 +1004,9 @@ void Disjkstra(GraphAM<V, E>& graph, V ver, double dist[], int path[]) {
 	}
 }
 ```
+
 搞不懂为什么要有book，我这样也能啊？？
+
 ```c++
 template<class V,class E>
 void Disjkstra(GraphAM<V,E>&graph,V ver,double dist[],int path[]) {
@@ -947,13 +1026,17 @@ void Disjkstra(GraphAM<V,E>&graph,V ver,double dist[],int path[]) {
 		}
 }
 ```
-* 用优先级队列优化
+
+**用优先级队列优化**
+
 ```c++
 
 ```
 
-### 多源最短路径——Floyd算法
-**动态规划**
+### 多源最短路径
+
+**Floyd算法:采用动态规划**
+
 用dist[i][j]来存放i到j的最短距离，用path[i][j]来存放i到j最短路径中j的前驱顶点
 策略是：
 在经过编号不超过k的顶点的条件下，探究i到j的最短路。
@@ -963,8 +1046,11 @@ $$path[i][j]=\begin{cases}
 	path[i][j] & dist[i][j]<dist[i][k]+dist[k][j]\\
 	path[k][j] & dist[i][j]>dist[i][k]+dist[k][j]\\
 \end{cases}$$
+
 **代码**
+
 注意：k对应动态规划的阶段，因此放在最外层循环
+
 ```c++
 template <class V, class E>
 void Floyd(GraphAM<V, E>& graph, double **dist, int **path) {
@@ -986,21 +1072,30 @@ void Floyd(GraphAM<V, E>& graph, double **dist, int **path) {
 			}
 }
 ```
+
 ## Topological Sort拓扑排序
+
 **是啥玩意**
+
 把有向无环图中各顶点间的前驱，后继关系用线性顺序表现出来
 >A topological sort is an ordering of vertices in a directed acyclic graph, such that if there is a path from vi to vj, then vj appears after vi in the ordering.
 We can view a topological sort of a graph as an ordering of its vertices along a horizontal line so that all directed edges go from left to right.
 
+![](pic/%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E5%9B%BE%E7%A4%BA.png)
+
 **必须是在有向无环图里才成立**
+
 在无向图中或v~i~和v~j~构成环，那它们都是既为彼此的前驱也为彼此的后继，这样就排不了序了
 
 **算法描述**
+
 找到一个没有直接前驱（入度=0）的顶点v，输出v，然后删除v顶点和v的所有边，重复上述操作。
 算法结束后（没有入度=0的顶点），如果还有顶点剩余，说明有向图有环，不满足要求；否则拓扑排序成功。
 
 **优化代码**
+
 邻接矩阵和邻接表的代码一样，只是传参不一样
+
 ```c++
 //传GraphAM<V,E>就是邻接矩阵的代码
 template <class V>
@@ -1042,6 +1137,9 @@ bool TopologicalSortAL(GraphAL<V>& graph) {
 	return true;
 }
 ```
+
 ## AOV网络
+
 ## 网络流
+
 https://zhuanlan.zhihu.com/p/122375531
