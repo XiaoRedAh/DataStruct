@@ -1,19 +1,29 @@
 # 内排序
+
 ## 总览
+
 ![](pic\排序算法分类.png)
-## 各种排序算法的性能对比
+
+## 性能对比
+
 ![](pic/排序算法性能比较.png)
+
 **算法稳定性**
+
 假定在待排序的记录序列中，存在多个具有相同的关键字的记录，若经过排序，这些记录的相对次序保持不变，即在原序列中，A1=A2，且A1在A2之前，而在排序后的序列中，A1仍在A2之前，则称这种排序算法是稳定的；否则称为不稳定的。
 
 排序算法是否为稳定的是由具体算法决定的，不稳定的算法在某种条件下可以变为稳定的算法，而稳定的算法在某种条件下也可以变为不稳定的算法。
+
 **算法稳定性干啥的**
+
 算法稳定性的意义一般体现在按不同标准多次排序的场景
 
 比如一个班的学生已经按照学号大小排好序了，现在要求按照年龄从小到大再排个序，如果年龄相同的，必须按照学号从小到大的顺序排列。如果选择的年龄排序方法是不稳定的，排序完了后年龄相同的一组学生学号就乱了；如果是稳定的排序算法，就只需要按照年龄排一遍就好了。
 
-再比如淘宝商城按多种标准排序时
-## Insertion Sort直接插入排序
+## 插入排序
+
+### 直接插入排序
+
 ```c++
 void insertSort(vector<int>& v, int begin, int end) {
 	/*直接插入排序：将有序数列外的元素插入有序数列，使有序数列一步步扩大，直至
@@ -31,7 +41,11 @@ void insertSort(vector<int>& v, int begin, int end) {
 	}
 }
 ```
-## 优化直接插入——希尔排序Shell Sort
+
+### 希尔排序
+
+一种优化的插入排序算法
+
 ```c++
 void ShellSort(vector<int>& v, int begin, int end) {
 	/*将距离为gap的整数倍的元素划分在一个子序列，对这些子序列进行直接插入排序
@@ -52,14 +66,23 @@ void ShellSort(vector<int>& v, int begin, int end) {
 	}
 }
 ```
-## Heap Sort堆排序（以最小堆为例）
+
+## 堆排序
+
+注：以最小堆为例
+
 **最初的思路**
+
 最小堆的第一个元素是min，那就`deleteMin`得到min，将它放到另一个数组`temp`里，一直重复操作,temp里的元素就是有序的，最后将temp的元素`copy`回原数组
+
 **优化一下——不额外开辟空间**
+
 将堆第一个元素和堆最后一个元素交换，然后堆大小-1，调整堆序性，不断重复上述操作直至堆大小为0
 
 这样操作可以避免额外开辟空间，用最小堆进行堆排序得到递减序列，用最大堆进行堆排序得到递增序列
+
 **代码**
+
 ```c++
 void siftDown(T* arr,int start, int PosLastNode) {
 	int PosFather = start;
@@ -90,18 +113,25 @@ void heapSort(T* arr, int length) {
 	}
 }
 ```
-## Merge Sort归并排序
+
+## 归并排序
+
 **divide-and-conquer分治思想(以二路归并为例)**
+
 要排序全集S，就将全集S的前一半元素划分为S1，后一半元素划分为S2，排序S1，S2（这个排序也是遵从上面的策略），最后将有序的S1和S2合并成有序的全集S
 
 从上面描述可知，归并排序就是将要排序的集合一步步划分为小集合，当这些小集合有序后，一步步返回合并为规模更大的有序集合，最终合并为有序的全集
 
 因此可以用递归的方式实现递归算法：一步步将问题划分为更小的子问题，在返回（归）的过程中合并
+
 **怎么合并两个有序集合**
+
 >The basic merging algorithm takes two input arrays A and B, an output array C, and three counters, Actr, Bctr, and Cctr, which are initially set to the beginning of their respective arrays. The smaller of A[Actr] and B[Bctr] is copied to the next entry in C, and the appropriate counters are advanced. When either input list is exhausted, the remainder of the other list is copied to C
 
 写代码时，可以用一个暂存数组保存合并的结果，然后将暂存数组返回给原来的数组
+
 **代码（二路归并）**
+
 ```c++
 void merge(vector<int>& v, int* temp, int begin, int mid ,int end) {
 	int tempPos = begin;//暂存数组的起始位置：S1的起始
@@ -133,13 +163,50 @@ void mergeSort(vector<int>& v,int* temp,int begin,int end) {
 	}
 }
 ```
-## Quick Sort快速排序
+
+## 交换排序
+
+### 冒泡排序
+
+**经典冒泡**
+
+```c++
+void bubbleSort(vector<int>& v, int begin, int end) {
+	/*冒泡排序：要排序的数据有n个，则需要排n-1轮,每轮轮比完会将序列分
+      为无序区和有序区两个区间，每轮排序都将最大元素交换到了最后（有序区的首位置），
+	  每轮排序从begin开始相邻数据两两比较，若反序则交换，直到无序区比较完无序区
+	  的最后两个元素
+*/
+	bool exchange;
+	for (int i = 0; i < end - begin; i++) {//排n-1轮
+		exchange = false;
+		for (int j = begin; j < end - i; j++) {//每轮排序的逻辑
+			if (v[j] > v[j + 1]) {
+				swap(v[j], v[j + 1]);
+				exchange = true;
+			}
+		}
+		if (exchange == false)break;
+	}
+}
+```
+
+**优化冒泡**
+
+```c++
+
+```
+
+### 快速排序
+
 **和归并排序一样，快排也采用 divide-and conquer 思想，可以用递归算法实现**
 
 **对比归并排序的优势在于子问题的规模不要求一样大**
+
 >Like mergesort, it recursively solves two subproblems and requires linear additional work (step 3), but, unlike mergesort, the subproblems are not guaranteed to be of equal size, which is potentially bad. The reason that quicksort is faster is that the partitioning step can actually be performed in place and very efficiently. This efficiency more than makes up for the lack of equal-sized recursive calls.
 
 **典型的快排包括以下四步**
+
 从集合里拿出一个参照物（pivot），然后将剩余元素分成两部分（partition）：所有元素<=pivot的区域S1和所有元素均>=pivot的区域S2,最终返回S1+pivot+S2
 >1、If the number of elements in S is 0 or 1, then return.
 2、Pick any element v in S. This is called the pivot.
@@ -147,7 +214,9 @@ void mergeSort(vector<int>& v,int* temp,int begin,int end) {
 4、 Return {quicksort(S1) followed by v followed by quicksort(S2)}
 
 step2和step3实现的方法有很多种
+
 **step2：如何选择参照物pivot**
+
 * 不要选第一个元素作为pivot:
 多数情况下，我们的输入是有序或部分有序的，这个时候挑选第一个元素作pivot，根据它分区会很不理想（因为两个分区元素数量差距会很悬殊，甚至有一个分区没有元素），这会导致浪费很多时间做无用的事
 >if the input is presorted or in reverse order, then the pivot provides a poor partition, because either all the elements go into S1 or they go into S2.
@@ -189,10 +258,13 @@ void quickSort(vector<int>& v, int begin,int end) {
 }
 ```
 **优化快排**
+
 快排在数据量小（N<=20）的时候效率一般。我们可以在一开始数据量很大时用快排，当子序列的数据量缩小到一定值(5~15之间)，就转而用插入排序或其他在数据量小时效率更高的排序算法
+
 >A common solution is not to use quicksort recursively for small arrays, but instead use a sorting algorithm that is efficient for small arrays, such as insertion sort. Using this strategy can actually save about 15 percent in the running time (over doing no cutoff at all). A good cutoff range is N = 10, although any cutoff between 5 and 20 is likely to produce similar results. This also saves nasty degenerate cases, such as taking the median of three elements when there are only one or two.
 
 下面给出直接插入和快排混合算法
+
 ```c++
 void quickInsertSort(vector<int>& v, int begin, int end) {
 	//数据量小的时候转而用直接插入排序
@@ -213,33 +285,9 @@ void quickInsertSort(vector<int>& v, int begin, int end) {
 	}
 }
 ```
-## Bubble Sort冒泡排序
-**经典冒泡**
-```c++
-void bubbleSort(vector<int>& v, int begin, int end) {
-	/*冒泡排序：要排序的数据有n个，则需要排n-1轮,每轮轮比完会将序列分
-      为无序区和有序区两个区间，每轮排序都将最大元素交换到了最后（有序区的首位置），
-	  每轮排序从begin开始相邻数据两两比较，若反序则交换，直到无序区比较完无序区
-	  的最后两个元素
-*/
-	bool exchange;
-	for (int i = 0; i < end - begin; i++) {//排n-1轮
-		exchange = false;
-		for (int j = begin; j < end - i; j++) {//每轮排序的逻辑
-			if (v[j] > v[j + 1]) {
-				swap(v[j], v[j + 1]);
-				exchange = true;
-			}
-		}
-		if (exchange == false)break;
-	}
-}
-```
-**优化冒泡**
-```c++
 
-```
-## Selection Sort直接选择排序
+## 直接选择排序
+
 ```c++
 void selectSort(vector<int>& v, int begin, int end) {
 	/*直接选择排序：在v[i]到v[end]中找到最小元素的位置（初始时i=begin），
@@ -258,9 +306,15 @@ void selectSort(vector<int>& v, int begin, int end) {
 	}
 }
 ```
+
 ## Bucket Sort桶排序
+
 ## Counting Sort基数排序
+
 ## Radix Sort基数排序
+
 ## 链表实现排序算法
+
 https://www.cnblogs.com/TenosDoIt/p/3666585.html
+
 # 外排序
